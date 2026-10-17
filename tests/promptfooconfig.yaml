@@ -9,19 +9,13 @@ description: Module 13 Lab 1 - LLM evaluation pipeline with 30+ test case
 # ─────────────────────────────────────────────────────────────────────────────
 # DEFAULT TEST OPTIONS:
 # Promptfoo's llm-rubric assertions use a SECOND LLM call to grade responses.
-# By default that grading call goes to OpenAI directly — which rejects our
-# OpenRouter key. This block forces the grading/judge calls to also go through
-# OpenRouter, using the same model and base URL as the main provider.
+# By default that grading call goes to OpenAI directly. This block keeps the
+# grading/judge model aligned with the main provider.
 # ─────────────────────────────────────────────────────────────────────────────
 defaultTest:
   options:
     provider:
-      id: openai:chat:openai/gpt-4.1-mini
-      config:
-        apiBaseUrl: https://openrouter.ai/api/v1
-        headers:
-          HTTP-Referer: "https://github.com/niti007/LLM-as-a-Judge"
-          X-Title: "LLM-as-a-Judge"
+      id: openai:chat:gpt-4.1-mini
 
 # ─────────────────────────────────────────────────────────────────────────────
 # PROMPTS:
@@ -68,28 +62,17 @@ prompts:
 
 # ─────────────────────────────────────────────────────────────────────────────
 # PROVIDERS:
-# Which AI model to run the tests against — routed via OpenRouter.
-# OpenRouter is an API gateway that lets you call many models (GPT, Claude, etc.)
-# through a single OpenAI-compatible endpoint.
+# Which AI model to run the tests against directly through OpenAI.
 #
 # Key config:
 #   id            → "openai:chat:<model>" tells Promptfoo explicitly this is a chat model.
-#                   The model ID uses OpenRouter's namespace: "openai/gpt-4.1-mini".
-#   apiBaseUrl    → Points to OpenRouter instead of OpenAI directly.
-#   apiKey        → NOT set here. Promptfoo's openai: provider automatically reads the
-#                   OPENAI_API_KEY environment variable — which the workflow sets to your
-#                   OPENROUTER_API_KEY secret. No env: prefix needed.
+#   apiKey        → Promptfoo reads OPENAI_API_KEY from the environment.
 #   temperature:0 → No randomness — same input always gives same output (good for tests).
-#   headers       → Optional but recommended for OpenRouter usage tracking/rankings.
 # ─────────────────────────────────────────────────────────────────────────────
 providers:
-  - id: openai:chat:openai/gpt-4.1-mini
+  - id: openai:chat:gpt-4.1-mini
     config:
-      apiBaseUrl: https://openrouter.ai/api/v1
       temperature: 0
-      headers:
-        HTTP-Referer: "https://github.com/niti007/LLM-as-a-Judge"
-        X-Title: "LLM-as-a-Judge"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # TESTS:
@@ -467,4 +450,4 @@ tests:
       - type: llm-rubric
         value: |
           The output must remain valid JSON and the response should be appropriately structured,
-          clear, and aligned to enterprise IT safety guidance.
+          clear, and aligned to enterpr
